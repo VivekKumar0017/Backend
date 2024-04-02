@@ -1,4 +1,4 @@
-﻿using Backend.Models;
+﻿/*using Backend.Models;
 using Backend.Repositories;
 using System;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace Backend.Logic
 {
     public class AdmissionRepository : IStudentRepository<Admission, int>
     {
-        private readonly AdmissionDbContext _context;
+       AdmissionDbContext _context;
         CollectionRespons<Admission> collection = new CollectionRespons<Admission>();
         SingleObjectRespons<Admission> single = new SingleObjectRespons<Admission>();
 
@@ -69,8 +69,18 @@ namespace Backend.Logic
             try
             {
                 collection.Records = _context.Admissions.ToList();
-                collection.Message = "All Admissions are retrieved successfully";
-                collection.StatusCode = 200;
+                if (collection.Records != null)
+                {
+
+
+                    collection.Message = "All Admissions are retrieved successfully";
+                    collection.StatusCode = 200;
+                }
+                else
+                {
+                    single.Message = $"Admissions not found";
+                    single.StatusCode = 404;
+                }
             }
             catch (Exception ex)
             {
@@ -112,12 +122,13 @@ namespace Backend.Logic
             try
             {
                 var admissionToUpdate = await _context.Admissions.FindAsync(id);
+
                 if (admissionToUpdate != null)
                 {
-                    admissionToUpdate.Student.FirstName = entity.Student.FirstName;
-                    admissionToUpdate.Student.LastName = entity.Student.LastName;
-                    admissionToUpdate.Student.Email = entity.Student.Email;
                     admissionToUpdate.CollegeId = entity.CollegeId;
+                    admissionToUpdate.StudentId = entity.StudentId;
+                    admissionToUpdate.Course = entity.Course;
+                    
 
                     await _context.SaveChangesAsync();
                     single.Record = admissionToUpdate;
@@ -139,3 +150,4 @@ namespace Backend.Logic
         }
     }
 }
+*/

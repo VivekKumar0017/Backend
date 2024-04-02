@@ -1,6 +1,7 @@
 ﻿using Backend.Logic;
 using Backend.Models;
 using Backend.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -19,30 +20,35 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "StudentPolicy")]
         public async Task<ActionResult<CollectionRespons<College>>> GetColleges()
         {
             return await _collegeRepository.GetAsync();
         }
 
         [HttpGet("{name}")]
+        [Authorize(Policy = "StudentPolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> GetCollegeByName(string name)
         {
             return await _collegeRepository.GetAsync(name);
         }
 
         [HttpPost]
+        [Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> CreateCollege(College college)
         {
             return await _collegeRepository.CreateAsync(college);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> UpdateCollege(int id, College college)
         {
             return await _collegeRepository.UpdateAsync(id, college);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> DeleteCollege(int id)
         {
             return await _collegeRepository.DeleteAsync(id);

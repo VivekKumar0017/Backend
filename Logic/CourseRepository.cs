@@ -93,7 +93,7 @@ namespace Backend.Logic
                 }
 
                 existingCourse.CourseName = entity.CourseName;
-                existingCourse.Description = entity.Description;
+               
 
                 ctx.Courses.Update(existingCourse);
                 await ctx.SaveChangesAsync();

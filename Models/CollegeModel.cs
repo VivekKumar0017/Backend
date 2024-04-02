@@ -10,18 +10,18 @@ namespace Backend.Models
     public class College : EntityBase
     {
         [Key]
+        public int collegeUniqueId { get; set; }
         public int CollegeId { get; set; }
-
-        [Required]
         public string Name { get; set; }
-
+        public string Location { get; set; }
         public string Description { get; set; }
+        // Navigation property
+        public virtual ICollection<Course> Courses { get; set; }=new List<Course>();
 
-        // Make Courses and Admissions collections nullable
-        public virtual ICollection<Course>? Courses { get; set; }
+        public virtual ICollection<Student> Students { get; set; } = new List<Student>();
 
-        // Navigation property for related admissions
-        public virtual ICollection<Admission>? Admissions { get; set; }
+
+
     }
 
 }

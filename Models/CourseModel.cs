@@ -6,10 +6,17 @@ namespace Backend.Models
     public class Course : EntityBase
     {
         [Key]
+        public int courseUniqueId { get; set; }
         public int CourseId { get; set; }
         public string CourseName { get; set; }
-        public string Description { get; set; }
-        public int CollegeId { get; set; } // Foreign key to College
-        public virtual College College { get; set; } // Make virtual
+        // Foreign key
+        public int collegeUniqueId { get; set; }
+        // Navigation property
+        
+        public College? College { get; set; }
+
+        public virtual ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
+
     }
 }
+
