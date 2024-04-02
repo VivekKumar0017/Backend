@@ -18,7 +18,7 @@ namespace Backend.Models
         // Navigation property
         public virtual ICollection<Course> Courses { get; set; }=new List<Course>();
 
-        public virtual ICollection<Student> Students { get; set; } = new List<Student>();
+        public virtual ICollection<Student> ?Students { get; set; } = new List<Student>();
 
 
 

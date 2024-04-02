@@ -9,6 +9,8 @@ namespace Backend.Models
         public DbSet<College> Colleges { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
+
+        public DbSet<StudentReport> StudentReports { get; set; }
         /* public DbSet<Admission> Admissions { get; set; }*/
 
         public AdmissionDbContext(DbContextOptions<AdmissionDbContext> options) : base(options)
@@ -55,7 +57,12 @@ namespace Backend.Models
                     .HasMany(c => c.Courses)
                     .WithOne(c => c.College)
                     .HasForeignKey(c => c.collegeUniqueId)
-                    .OnDelete(DeleteBehavior.Restrict); 
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<StudentReport>()
+                    .HasOne(s => s.Student)
+                    .WithMany()
+                    .HasForeignKey(a => a.AdmissionId);
             
             }
             catch (Exception ex)
