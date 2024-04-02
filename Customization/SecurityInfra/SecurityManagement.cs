@@ -1,6 +1,10 @@
 ﻿using Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Backend.Customization.SecurityInfra
 {
@@ -18,6 +22,7 @@ namespace Backend.Customization.SecurityInfra
             RoleManager = roleManager;
             config = configuration;
         }
+       
 
 
         public async Task<bool> RegisterUserAsync(AppUser user)
@@ -87,35 +92,71 @@ namespace Backend.Customization.SecurityInfra
         public async Task<SecurityResponse> AuthenticateUserAsync(LoginUser user)
         {
             SecurityResponse response = new SecurityResponse();
-
             try
             {
+                // Check if user exists
                 var userExist = await UserManager.FindByEmailAsync(user.Email);
                 if (userExist == null)
                     throw new Exception($"User with Email {user.Email} is not found");
 
-                var RoleListForUser = await UserManager.GetRolesAsync(userExist);
-                if (RoleListForUser.Count == 0)
-                {
-                    throw new Exception($"User with Email {user.Email} is not assigned to any Role, please assign Role for authentication");
-                }
-
+                // Authenticate the user
                 var result = await SignInManager.PasswordSignInAsync(user.Email, user.Password, false, lockoutOnFailure: true);
-                response.IsLoggedIn = true;
-                if (!result.Succeeded)
+                if (result.Succeeded)
                 {
-                    throw new Exception($"Login failed for User with Email {user.Email}, check the password");
+                    // Generate the token
+                    var secretKey = Encoding.ASCII.GetBytes(config["JWTCoreSettings:SecretKey"]);
+                    var expiry = Convert.ToInt32(config["JWTCoreSettings:ExpiryInMinutes"]);
+
+                    // Create Claims for the user
+                    var claims = new List<Claim>
+                    {
+                        new Claim("username", userExist.Email),
+                    };
+
+                    // Check if the user is a college or a student
+                    var isCollege = await UserManager.IsInRoleAsync(userExist, "college");
+                    if (isCollege)
+                    {
+                        claims.Add(new Claim("role", "college"));
+                    }
+                    else
+                    {
+                        claims.Add(new Claim("role", "student"));
+                    }
+
+                    // Create a Token Descriptor
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(claims),
+                        Expires = DateTime.UtcNow.AddMinutes(expiry),
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature)
+                    };
+
+                    // Generate the JWT token
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    var tokenString = tokenHandler.WriteToken(token);
+
+                    // Set response properties
+                    response.IsLoggedIn = true;
+                    response.Token = tokenString;
+                }
+                else
+                {
+                    // Authentication failed
+                    response.IsLoggedIn = false;
                 }
             }
             catch (Exception ex)
             {
+                // Handle exceptions
                 throw ex;
             }
 
             return response;
         }
 
-      
+
 
         public async Task<bool> LogoutAsync()
         {
@@ -137,6 +178,8 @@ namespace Backend.Customization.SecurityInfra
             {
                 return false;
             }
+
         }
     }
+
 }
