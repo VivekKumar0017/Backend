@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddScoped<IDataRepository<College,int>, CollegeRepository>();
-builder.Services.AddScoped<IDataRepository<Course, int>, CourseRepository>();
+builder.Services.AddScoped<ICourseRepository<Course, int>, CourseRepository>();
 
 builder.Services.AddScoped<IStudentRepository<Student,int>, StudentRepository>();
 builder.Services.AddScoped<IStudentReportRepository<StudentReport,int>, StudentReportRepository>();

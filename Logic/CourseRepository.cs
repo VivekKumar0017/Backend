@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Logic
 {
-    public class CourseRepository : IDataRepository<Course, int>
+    public class CourseRepository : ICourseRepository<Course, int>
     {
         AdmissionDbContext ctx;
 
@@ -16,7 +16,7 @@ namespace Backend.Logic
         {
             this.ctx = ctx;
         }
-        public async Task<SingleObjectRespons<Course>> CreateAsync(Course entity)
+        public async Task<SingleObjectRespons<Course>> CreatecourseAsync(Course entity)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> DeleteAsync(int id)
+        public async Task<SingleObjectRespons<Course>> DeletecourseAsync(int id)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> GetAsync(string name)
+        public async Task<SingleObjectRespons<Course>> GetcourseAsync(string name)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<CollectionRespons<Course>> GetAsync()
+        public async Task<CollectionRespons<Course>> GetcourseAsync()
         {
             try
             {
@@ -82,7 +82,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> UpdateAsync(int id, Course entity)
+        public async Task<SingleObjectRespons<Course>> UpdatecourseAsync(int id, Course entity)
         {
             try
             {
@@ -103,6 +103,27 @@ namespace Backend.Logic
             catch (Exception ex)
             {
                 return new SingleObjectRespons<Course> { Record = null, StatusCode = 500, Message = ex.Message };
+            }
+        }
+
+        public async Task<CollectionRespons<Course>> GetcourseByCollegeIdAsync(int CollegeId)
+        {
+            try
+            {
+                var courses = await ctx.Courses
+                                        .Where(c => c.collegeUniqueId == CollegeId)
+                                        .ToListAsync();
+
+                if (courses == null || courses.Count == 0)
+                {
+                    return new CollectionRespons<Course> { Records = null, StatusCode = 404, Message = "No courses found for the specified college" };
+                }
+
+                return new CollectionRespons<Course> { Records = courses, StatusCode = 200, Message = "Courses retrieved successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new CollectionRespons<Course> { Records = null, StatusCode = 500, Message = ex.Message };
             }
         }
     }
