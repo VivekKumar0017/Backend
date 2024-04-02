@@ -5,7 +5,7 @@
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class newmigration : Migration
+    public partial class tenthmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,10 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CourseId = table.Column<int>(type: "int", nullable: false),
                     CourseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    collegeUniqueId = table.Column<int>(type: "int", nullable: false)
+                    collegeUniqueId = table.Column<int>(type: "int", nullable: false),
+                    courseFees = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CourseDuration = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ElegblityCriteria = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,6 +58,10 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     collegeUniqueId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -92,6 +99,27 @@ namespace Backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentReports",
+                columns: table => new
+                {
+                    studentReportId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdmissionId = table.Column<int>(type: "int", nullable: false),
+                    Attendance = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grade = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentReports", x => x.studentReportId);
+                    table.ForeignKey(
+                        name: "FK_StudentReports_Students_AdmissionId",
+                        column: x => x.AdmissionId,
+                        principalTable: "Students",
+                        principalColumn: "AdmissionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_collegeUniqueId",
                 table: "Courses",
@@ -101,6 +129,11 @@ namespace Backend.Migrations
                 name: "IX_StudentCourses_courseUniqueId",
                 table: "StudentCourses",
                 column: "courseUniqueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentReports_AdmissionId",
+                table: "StudentReports",
+                column: "AdmissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_collegeUniqueId",
@@ -113,6 +146,9 @@ namespace Backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "StudentCourses");
+
+            migrationBuilder.DropTable(
+                name: "StudentReports");
 
             migrationBuilder.DropTable(
                 name: "Courses");

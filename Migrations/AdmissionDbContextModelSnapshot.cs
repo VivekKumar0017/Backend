@@ -57,6 +57,10 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("courseUniqueId"));
 
+                    b.Property<string>("CourseDuration")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
@@ -64,8 +68,16 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ElegblityCriteria")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("collegeUniqueId")
                         .HasColumnType("int");
+
+                    b.Property<string>("courseFees")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("courseUniqueId");
 
@@ -82,11 +94,27 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdmissionId"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -113,6 +141,32 @@ namespace Backend.Migrations
                     b.HasIndex("courseUniqueId");
 
                     b.ToTable("StudentCourses");
+                });
+
+            modelBuilder.Entity("Backend.Models.StudentReport", b =>
+                {
+                    b.Property<int>("studentReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("studentReportId"));
+
+                    b.Property<int>("AdmissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Attendance")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Grade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("studentReportId");
+
+                    b.HasIndex("AdmissionId");
+
+                    b.ToTable("StudentReports");
                 });
 
             modelBuilder.Entity("Backend.Models.Course", b =>
@@ -152,6 +206,17 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Backend.Models.StudentReport", b =>
+                {
+                    b.HasOne("Backend.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("AdmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Student");
                 });

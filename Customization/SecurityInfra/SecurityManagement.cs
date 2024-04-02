@@ -92,12 +92,15 @@ namespace Backend.Customization.SecurityInfra
         public async Task<SecurityResponse> AuthenticateUserAsync(LoginUser user)
         {
             SecurityResponse response = new SecurityResponse();
+
             try
             {
                 // Check if user exists
                 var userExist = await UserManager.FindByEmailAsync(user.Email);
                 if (userExist == null)
+                {
                     throw new Exception($"User with Email {user.Email} is not found");
+                }
 
                 // Authenticate the user
                 var result = await SignInManager.PasswordSignInAsync(user.Email, user.Password, false, lockoutOnFailure: true);
@@ -109,20 +112,14 @@ namespace Backend.Customization.SecurityInfra
 
                     // Create Claims for the user
                     var claims = new List<Claim>
-                    {
-                        new Claim("username", userExist.Email),
-                    };
+            {
+                new Claim(ClaimTypes.Name, userExist.Email)
+            };
 
                     // Check if the user is a college or a student
                     var isCollege = await UserManager.IsInRoleAsync(userExist, "college");
-                    if (isCollege)
-                    {
-                        claims.Add(new Claim("role", "college"));
-                    }
-                    else
-                    {
-                        claims.Add(new Claim("role", "student"));
-                    }
+                    var roleClaim = isCollege ? new Claim(ClaimTypes.Role, "college") : new Claim(ClaimTypes.Role, "student");
+                    claims.Add(roleClaim);
 
                     // Create a Token Descriptor
                     var tokenDescriptor = new SecurityTokenDescriptor
@@ -138,6 +135,7 @@ namespace Backend.Customization.SecurityInfra
                     var tokenString = tokenHandler.WriteToken(token);
 
                     // Set response properties
+                    response.Role = roleClaim.Value;
                     response.IsLoggedIn = true;
                     response.Token = tokenString;
                 }
@@ -145,16 +143,19 @@ namespace Backend.Customization.SecurityInfra
                 {
                     // Authentication failed
                     response.IsLoggedIn = false;
+                    response.Message = "Authentication failed. Please check the credentials.";
                 }
             }
             catch (Exception ex)
             {
                 // Handle exceptions
-                throw ex;
+                response.IsLoggedIn = false;
+                response.Message = ex.Message;
             }
 
             return response;
         }
+
 
 
 

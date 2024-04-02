@@ -11,6 +11,12 @@ namespace Backend.Models
         public string CourseName { get; set; }
         // Foreign key
         public int collegeUniqueId { get; set; }
+
+        public string courseFees { get; set; }
+
+        public string CourseDuration { get; set; }   
+
+        public string ElegblityCriteria { get; set; }
         // Navigation property
         
         public College? College { get; set; }
