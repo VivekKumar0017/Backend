@@ -60,5 +60,15 @@ namespace Backend.Controllers
         {
             return await _courseRepository.GetcourseByCollegeIdAsync(collegeId);
         }
+        [HttpGet("ById{id}")]
+       
+        public async Task<ActionResult<SingleObjectRespons<Course>>> GetCourseById(int id)
+        {
+            return await _courseRepository.GetcourseByIdAsync(id);
+
+
+        }
+
     }
+
 }

@@ -202,6 +202,32 @@ namespace Backend.Logic
                 return single;
             }
         }
+        public async Task<SingleObjectRespons<College>> GetCollegeByIdAsync(int id)
+        {
+            try
+            {
+                var college = await ctx.Colleges.FindAsync(id);
+                if (college == null)
+                {
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "College not found";
+                    return single;
+                }
+
+                single.Record = college;
+                single.StatusCode = 200;
+                single.Message = "College found";
+                return single;
+            }
+            catch (Exception ex)
+            {
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
+            }
+        }
 
     }
 }

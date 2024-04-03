@@ -10,5 +10,7 @@ namespace Backend.Repositories
         Task<SingleObjectRespons<TEntity>> UpdatecourseAsync(TPk id, TEntity entity);
         Task<SingleObjectRespons<TEntity>> DeletecourseAsync(TPk id);
         Task<CollectionRespons<TEntity>> GetcourseByCollegeIdAsync(TPk id);
+
+        Task<SingleObjectRespons<TEntity>> GetcourseByIdAsync(TPk id); 
     }
 }

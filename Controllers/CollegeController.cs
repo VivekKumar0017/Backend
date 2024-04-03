@@ -29,7 +29,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{name}")]
-        [Authorize(Policy = "StudentPolicy")]
+        /*[Authorize(Policy = "StudentPolicy")]*/
         public async Task<ActionResult<SingleObjectRespons<College>>> GetCollegeByName(string name)
         {
             return await _collegeRepository.GetAsync(name);
@@ -61,5 +61,13 @@ namespace Backend.Controllers
         {
             return await _collegeRepository.ReviewStudentApplicationAsync(collegeId, admissionId, status);
         }
+        [HttpGet("ById/{id}")]
+      /*  [Authorize(Policy = "StudentPolicy")]*/
+        public async Task<ActionResult<SingleObjectRespons<College>>> GetCollegeById(int id)
+        {
+            return await _collegeRepository.GetCollegeByIdAsync(id);
+        }
+
+
     }
 }

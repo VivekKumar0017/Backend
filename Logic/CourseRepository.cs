@@ -176,5 +176,33 @@ namespace Backend.Logic
                 return collection;
             }
         }
+
+        async Task<SingleObjectRespons<Course>> ICourseRepository<Course, int>.GetcourseByIdAsync(int id)
+        {
+            try
+            {
+                var course = await ctx.Courses.FindAsync(id);
+                if (course == null)
+                {
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Course not found";
+                    return single;
+                }
+
+                single.Record = course;
+                single.StatusCode = 200;
+                single.Message = "Course found";
+                return single;
+            }
+            catch (Exception ex)
+            {
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
+            }
+        }
+
     }
 }
