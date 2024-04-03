@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AdmissionDbContext))]
-    [Migration("20240402115542_tenthmigration")]
+    [Migration("20240403053933_tenthmigration")]
     partial class tenthmigration
     {
         /// <inheritdoc />
@@ -120,6 +120,9 @@ namespace Backend.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("collegeUniqueId")
                         .HasColumnType("int");

@@ -20,7 +20,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "StudentPolicy")]
+        [Authorize(Policy = "CollegePolicy")]
+        /*[Authorize(Policy = "StudentPolicy")]*/
+        
         public async Task<ActionResult<CollectionRespons<College>>> GetColleges()
         {
             return await _collegeRepository.GetAsync();
@@ -52,6 +54,12 @@ namespace Backend.Controllers
         public async Task<ActionResult<SingleObjectRespons<College>>> DeleteCollege(int id)
         {
             return await _collegeRepository.DeleteAsync(id);
+        }
+        [HttpPost("{collegeId}/ReviewStudentApplication/{admissionId}")]
+        [Authorize(Policy = "CollegePolicy")]
+        public async Task<ActionResult<SingleObjectRespons<College>>> ReviewStudentApplication(int collegeId, int admissionId, ApprovalStatus status)
+        {
+            return await _collegeRepository.ReviewStudentApplicationAsync(collegeId, admissionId, status);
         }
     }
 }

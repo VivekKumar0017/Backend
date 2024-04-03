@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations.AppSecurityDb
 {
     /// <inheritdoc />
-    public partial class ttenthmigration : Migration
+    public partial class tenthmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

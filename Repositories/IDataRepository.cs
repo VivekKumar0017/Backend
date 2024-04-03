@@ -11,6 +11,10 @@ namespace Backend.Repositories
         Task<SingleObjectRespons<TEntity>> CreateAsync(TEntity entity);
         Task<SingleObjectRespons<TEntity>> UpdateAsync(TPk id, TEntity entity);
         Task<SingleObjectRespons<TEntity>> DeleteAsync(TPk id);
+
+        Task<SingleObjectRespons<TEntity>> ReviewStudentApplicationAsync(TPk CollegeId, TPk admissionId, ApprovalStatus status);
+
+       
     }
 }
 

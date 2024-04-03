@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations.AppSecurityDb
 {
     [DbContext(typeof(AppSecurityDbContext))]
-    [Migration("20240402115731_ttenthmigration")]
-    partial class ttenthmigration
+    [Migration("20240403054032_tenthmigration")]
+    partial class tenthmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

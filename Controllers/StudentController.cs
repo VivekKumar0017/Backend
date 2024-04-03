@@ -12,7 +12,7 @@ namespace Backend.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        public  IStudentRepository<Student, int> _studentRepository;
+        private readonly IStudentRepository<Student, int> _studentRepository;
 
         public StudentController(IStudentRepository<Student, int> studentRepository)
         {
@@ -49,10 +49,16 @@ namespace Backend.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "StudentPolicy")]
-
         public async Task<ActionResult<SingleObjectRespons<Student>>> DeleteStudent(int id)
         {
             return await _studentRepository.DeleteAsync(id);
+        }
+
+        [HttpGet("pending/{collegeId}")]
+        [Authorize(Policy = "CollegePolicy")]
+        public async Task<ActionResult<CollectionRespons<Student>>> GetPendingStudents(int collegeId)
+        {
+            return await _studentRepository.GetPendingStudentsAsync(collegeId);
         }
     }
 }

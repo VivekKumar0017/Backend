@@ -1,5 +1,4 @@
-﻿
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,8 +10,8 @@ namespace Backend.Logic
     {
         AdmissionDbContext ctx;
 
-        CollectionRespons<Student> collection = new CollectionRespons<Student>();
         SingleObjectRespons<Student> single = new SingleObjectRespons<Student>();
+        CollectionRespons<Student> collection = new CollectionRespons<Student>();
 
         public StudentRepository(AdmissionDbContext ctx)
         {
@@ -24,11 +23,17 @@ namespace Backend.Logic
             try
             {
                 var students = await ctx.Students.ToListAsync();
-                return new CollectionRespons<Student> { Records = students, StatusCode = 200, Message = "Students retrieved successfully" };
+                collection.Records = students;
+                collection.StatusCode = 200;
+                collection.Message = "Students retrieved successfully";
+                return collection;
             }
             catch (Exception ex)
             {
-                return new CollectionRespons<Student> { Records = null, StatusCode = 500, Message = ex.Message };
+                collection.Records = null;
+                collection.StatusCode = 500;
+                collection.Message = ex.Message;
+                return collection;
             }
         }
 
@@ -39,14 +44,23 @@ namespace Backend.Logic
                 var student = await ctx.Students.FindAsync(id);
                 if (student == null)
                 {
-                    return new SingleObjectRespons<Student> { Record = null, StatusCode = 404, Message = "Student not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Student not found";
+                    return single;
                 }
 
-                return new SingleObjectRespons<Student> { Record = student, StatusCode = 200, Message = "Student found" };
+                single.Record = student;
+                single.StatusCode = 200;
+                single.Message = "Student found";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Student> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -56,11 +70,17 @@ namespace Backend.Logic
             {
                 ctx.Students.Add(entity);
                 await ctx.SaveChangesAsync();
-                return new SingleObjectRespons<Student> { Record = entity, StatusCode = 200, Message = "Student created successfully" };
+                single.Record = entity;
+                single.StatusCode = 200;
+                single.Message = "Student created successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Student> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -71,7 +91,10 @@ namespace Backend.Logic
                 var existingStudent = await ctx.Students.FindAsync(id);
                 if (existingStudent == null)
                 {
-                    return new SingleObjectRespons<Student> { Record = null, StatusCode = 404, Message = "Student not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Student not found";
+                    return single;
                 }
 
                 existingStudent.FirstName = entity.FirstName;
@@ -80,11 +103,17 @@ namespace Backend.Logic
                 ctx.Students.Update(existingStudent);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<Student> { Record = existingStudent, StatusCode = 200, Message = "Student updated successfully" };
+                single.Record = existingStudent;
+                single.StatusCode = 200;
+                single.Message = "Student updated successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Student> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -95,17 +124,70 @@ namespace Backend.Logic
                 var student = await ctx.Students.FindAsync(id);
                 if (student == null)
                 {
-                    return new SingleObjectRespons<Student> { Record = null, StatusCode = 404, Message = "Student not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Student not found";
+                    return single;
                 }
 
                 ctx.Students.Remove(student);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<Student> { Record = student, StatusCode = 200, Message = "Student deleted successfully" };
+                single.Record = student;
+                single.StatusCode = 200;
+                single.Message = "Student deleted successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Student> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
+            }
+        }
+
+        async Task<CollectionRespons<Student>> IStudentRepository<Student, int>.GetPendingStudentsAsync(int collegeId)
+        {
+            try
+            {
+                
+                var college = await ctx.Colleges.Include(c => c.Students)
+                                                .FirstOrDefaultAsync(c => c.collegeUniqueId == collegeId);
+                if (college == null)
+                {
+                    collection.Records = null;
+                    collection.StatusCode = 404;
+                    collection.Message = "College not found";
+                    return collection;
+                }
+
+                
+                var pendingStudents = college.Students
+                                             .Where(s => s.Status == ApprovalStatus.Pending)
+                                             .ToList();
+
+                if (!pendingStudents.Any())
+                {
+                    collection.Records = null;
+                    collection.StatusCode = 404;
+                    collection.Message = "No pending students found";
+                    return collection;
+                }
+
+                
+                collection.Records = pendingStudents;
+                collection.StatusCode = 200;
+                collection.Message = "Pending students retrieved successfully";
+                return collection;
+            }
+            catch (Exception ex)
+            {
+               
+                collection.Records = null;
+                collection.StatusCode = 500;
+                collection.Message = ex.Message;
+                return collection;
             }
         }
     }

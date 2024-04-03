@@ -1,34 +1,41 @@
-﻿using Backend.Repositories;
-
-
-using Backend.Models;
+﻿using Backend.Models;
+using Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
-
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Logic
 {
     public class CollegeRepository : IDataRepository<College, int>
     {
-        AdmissionDbContext ctx;
+        private readonly AdmissionDbContext ctx;
 
-        CollectionRespons<College> collection = new CollectionRespons<College>();
-        SingleObjectRespons<College> single = new SingleObjectRespons<College> ();
+        private CollectionRespons<College> collection = new CollectionRespons<College>();
+        private SingleObjectRespons<College> single = new SingleObjectRespons<College>();
 
         public CollegeRepository(AdmissionDbContext ctx)
         {
             this.ctx = ctx;
         }
+
         public async Task<SingleObjectRespons<College>> CreateAsync(College entity)
         {
             try
             {
                 ctx.Colleges.Add(entity);
                 await ctx.SaveChangesAsync();
-                return new SingleObjectRespons<College> { Record = entity, StatusCode = 200, Message = "College created successfully" };
+                single.Record = entity;
+                single.StatusCode = 200;
+                single.Message = "College created successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<College> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -39,17 +46,26 @@ namespace Backend.Logic
                 var college = await ctx.Colleges.FindAsync(id);
                 if (college == null)
                 {
-                    return new SingleObjectRespons<College> { Record = null, StatusCode = 404, Message = "College not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "College not found";
+                    return single;
                 }
 
                 ctx.Colleges.Remove(college);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<College> { Record = college, StatusCode = 200, Message = "College deleted successfully" };
+                single.Record = college;
+                single.StatusCode = 200;
+                single.Message = "College deleted successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<College> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -60,14 +76,23 @@ namespace Backend.Logic
                 var college = await ctx.Colleges.FirstOrDefaultAsync(c => c.Name == name);
                 if (college == null)
                 {
-                    return new SingleObjectRespons<College> { Record = null, StatusCode = 404, Message = "College not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "College not found";
+                    return single;
                 }
 
-                return new SingleObjectRespons<College> { Record = college, StatusCode = 200, Message = "College found" };
+                single.Record = college;
+                single.StatusCode = 200;
+                single.Message = "College found";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<College> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
@@ -76,11 +101,17 @@ namespace Backend.Logic
             try
             {
                 var colleges = await ctx.Colleges.ToListAsync();
-                return new CollectionRespons<College> { Records = colleges, StatusCode = 200, Message = "Colleges retrieved successfully" };
+                collection.Records = colleges;
+                collection.StatusCode = 200;
+                collection.Message = "Colleges retrieved successfully";
+                return collection;
             }
             catch (Exception ex)
             {
-                return new CollectionRespons<College> { Records = null, StatusCode = 500, Message = ex.Message };
+                collection.Records = null;
+                collection.StatusCode = 500;
+                collection.Message = ex.Message;
+                return collection;
             }
         }
 
@@ -91,7 +122,10 @@ namespace Backend.Logic
                 var existingCollege = await ctx.Colleges.FindAsync(id);
                 if (existingCollege == null)
                 {
-                    return new SingleObjectRespons<College> { Record = null, StatusCode = 404, Message = "College not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "College not found";
+                    return single;
                 }
 
                 existingCollege.Name = entity.Name;
@@ -100,14 +134,74 @@ namespace Backend.Logic
                 ctx.Colleges.Update(existingCollege);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<College> { Record = existingCollege, StatusCode = 200, Message = "College updated successfully" };
+                single.Record = existingCollege;
+                single.StatusCode = 200;
+                single.Message = "College updated successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<College> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
+            }
+
+        }
+
+        public async Task<SingleObjectRespons<College>> ReviewStudentApplicationAsync(int collegeId, int admissionId, ApprovalStatus status)
+        {
+            try
+            {
+                var college = await ctx.Colleges.Include(c => c.Students)
+                                                .FirstOrDefaultAsync(c => c.collegeUniqueId == collegeId);
+                if (college == null)
+                {
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "College not found";
+                    return single;
+                }
+
+                var student = college.Students.FirstOrDefault(s => s.AdmissionId == admissionId);
+                if (student == null)
+                {
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Student not found";
+                    return single;
+                }
+
+                if (status == ApprovalStatus.Rejected)
+                {
+                   
+                    ctx.Students.Remove(student);
+                    await ctx.SaveChangesAsync();
+                    single.Record = college;
+                    single.StatusCode = 200;
+                    single.Message = "Student application rejected and record deleted successfully";
+                    return single;
+                }
+                else
+                {
+                   
+                    student.Status = status;
+                    ctx.Students.Update(student);
+                    await ctx.SaveChangesAsync();
+                    single.Record = college;
+                    single.StatusCode = 200;
+                    single.Message = "Student review updated successfully";
+                    return single;
+                }
+            }
+            catch (Exception ex)
+            {
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
-       
     }
 }

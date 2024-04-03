@@ -1,9 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Backend.Models
+
+
 {
+
+    public enum ApprovalStatus
+    {
+        Pending, 
+        Approved,
+        Rejected
+    }
     public class Student : EntityBase
     {
         [Key]
@@ -26,7 +35,11 @@ namespace Backend.Models
 
 
 
+
         public int collegeUniqueId { get; set; }
+
+       
+        public ApprovalStatus Status { get; set; } = ApprovalStatus.Pending;
 
         public College? College { get; set; }
 
