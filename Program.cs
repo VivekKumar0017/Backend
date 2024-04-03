@@ -64,7 +64,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers()
  .AddJsonOptions(options =>
  {
-     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
      // Optionally, you can also configure other JSON serialization options here
      options.JsonSerializerOptions.PropertyNamingPolicy = null; // Suppress camel case conversion
  });

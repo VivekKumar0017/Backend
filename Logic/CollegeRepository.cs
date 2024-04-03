@@ -19,7 +19,7 @@ namespace Backend.Logic
             this.ctx = ctx;
         }
 
-        public async Task<SingleObjectRespons<College>> CreateAsync(College entity)
+        async Task<SingleObjectRespons<College>> IDataRepository<College, int>. CreateAsync(College entity)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<College>> DeleteAsync(int id)
+        async Task<SingleObjectRespons<College>> IDataRepository<College, int>.DeleteAsync(int id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<College>> GetAsync(string name)
+         async Task<SingleObjectRespons<College>> IDataRepository<College, int>.GetAsync(string name)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<CollectionRespons<College>> GetAsync()
+       async Task<CollectionRespons<College>> IDataRepository<College, int>.GetAsync()
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Backend.Logic
             }
         }
 
-        public async Task<SingleObjectRespons<College>> UpdateAsync(int id, College entity)
+       async Task<SingleObjectRespons<College>> IDataRepository<College, int>.UpdateAsync(int id, College entity)
         {
             try
             {
@@ -149,7 +149,7 @@ namespace Backend.Logic
 
         }
 
-        public async Task<SingleObjectRespons<College>> ReviewStudentApplicationAsync(int collegeId, int admissionId, ApprovalStatus status)
+         async Task<SingleObjectRespons<College>> IDataRepository<College, int>.ReviewStudentApplicationAsync(int collegeId, int admissionId, ApprovalStatus status)
         {
             try
             {

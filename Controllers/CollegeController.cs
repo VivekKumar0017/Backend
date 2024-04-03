@@ -20,7 +20,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "CollegePolicy")]
+       /* [Authorize(Policy = "CollegePolicy")]*/
         /*[Authorize(Policy = "StudentPolicy")]*/
         
         public async Task<ActionResult<CollectionRespons<College>>> GetColleges()
@@ -36,7 +36,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CollegePolicy")]
+      /*  [Authorize(Policy = "CollegePolicy")]*/
         public async Task<ActionResult<SingleObjectRespons<College>>> CreateCollege(College college)
         {
             return await _collegeRepository.CreateAsync(college);

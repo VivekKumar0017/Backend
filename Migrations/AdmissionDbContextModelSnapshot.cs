@@ -131,21 +131,6 @@ namespace Backend.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("Backend.Models.StudentCourse", b =>
-                {
-                    b.Property<int>("AdmissionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("courseUniqueId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AdmissionId", "courseUniqueId");
-
-                    b.HasIndex("courseUniqueId");
-
-                    b.ToTable("StudentCourses");
-                });
-
             modelBuilder.Entity("Backend.Models.StudentReport", b =>
                 {
                     b.Property<int>("studentReportId")
@@ -165,11 +150,31 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("courseUniqueId")
+                        .HasColumnType("int");
+
                     b.HasKey("studentReportId");
 
                     b.HasIndex("AdmissionId");
 
+                    b.HasIndex("courseUniqueId");
+
                     b.ToTable("StudentReports");
+                });
+
+            modelBuilder.Entity("CourseStudent", b =>
+                {
+                    b.Property<int>("CoursescourseUniqueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentsAdmissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CoursescourseUniqueId", "StudentsAdmissionId");
+
+                    b.HasIndex("StudentsAdmissionId");
+
+                    b.ToTable("StudentCourses", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Course", b =>
@@ -188,24 +193,24 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.College", "College")
                         .WithMany("Students")
                         .HasForeignKey("collegeUniqueId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("College");
                 });
 
-            modelBuilder.Entity("Backend.Models.StudentCourse", b =>
+            modelBuilder.Entity("Backend.Models.StudentReport", b =>
                 {
                     b.HasOne("Backend.Models.Student", "Student")
-                        .WithMany("StudentCourses")
+                        .WithMany("StudentReports")
                         .HasForeignKey("AdmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Backend.Models.Course", "Course")
-                        .WithMany("StudentCourses")
+                        .WithMany()
                         .HasForeignKey("courseUniqueId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -213,15 +218,19 @@ namespace Backend.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Backend.Models.StudentReport", b =>
+            modelBuilder.Entity("CourseStudent", b =>
                 {
-                    b.HasOne("Backend.Models.Student", "Student")
+                    b.HasOne("Backend.Models.Course", null)
                         .WithMany()
-                        .HasForeignKey("AdmissionId")
+                        .HasForeignKey("CoursescourseUniqueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.HasOne("Backend.Models.Student", null)
+                        .WithMany()
+                        .HasForeignKey("StudentsAdmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Backend.Models.College", b =>
@@ -231,14 +240,9 @@ namespace Backend.Migrations
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("Backend.Models.Course", b =>
-                {
-                    b.Navigation("StudentCourses");
-                });
-
             modelBuilder.Entity("Backend.Models.Student", b =>
                 {
-                    b.Navigation("StudentCourses");
+                    b.Navigation("StudentReports");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,7 +21,7 @@ namespace Backend.Models
         
         public College? College { get; set; }
 
-        public virtual ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
+        public virtual ICollection<Student>? Students { get; set; } 
 
     }
 }

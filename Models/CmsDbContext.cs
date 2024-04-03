@@ -8,7 +8,7 @@ namespace Backend.Models
         public DbSet<Student> Students { get; set; }
         public DbSet<College> Colleges { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<StudentCourse> StudentCourses { get; set; }
+        /*public DbSet<StudentCourse> StudentCourses { get; set; }*/
 
         public DbSet<StudentReport> StudentReports { get; set; }
         /* public DbSet<Admission> Admissions { get; set; }*/
@@ -25,45 +25,35 @@ namespace Backend.Models
 
 
 
-                // Configure the one-to-many relationship between College and Student
+                
                 base.OnModelCreating(modelBuilder);
 
-                // Configure the primary key for the join entity
-                modelBuilder.Entity<StudentCourse>()
-                    .HasKey(sc => new { sc.AdmissionId, sc.courseUniqueId });
 
-                // Configure the many-to-many relationship between Student and Course
-                modelBuilder.Entity<StudentCourse>()
-                    .HasOne(sc => sc.Student)
-                    .WithMany(s => s.StudentCourses)
-                    .HasForeignKey(sc => sc.AdmissionId)
-                    .OnDelete(DeleteBehavior.Cascade); 
-
-                modelBuilder.Entity<StudentCourse>()
-                    .HasOne(sc => sc.Course)
-                    .WithMany(c => c.StudentCourses)
-                    .HasForeignKey(sc => sc.courseUniqueId)
-                    .OnDelete(DeleteBehavior.Restrict); 
-
-                
-                modelBuilder.Entity<College>()
-                    .HasMany(c => c.Students)
-                    .WithOne(s => s.College)
-                    .HasForeignKey(s => s.collegeUniqueId)
-                    .OnDelete(DeleteBehavior.Cascade); 
+                modelBuilder.Entity<Student>()
+                .HasOne(s => s.College)
+                .WithMany(c => c.Students)
+                .HasForeignKey(s => s.collegeUniqueId)
+                .OnDelete(DeleteBehavior.Restrict);
 
                
-                modelBuilder.Entity<College>()
-                    .HasMany(c => c.Courses)
-                    .WithOne(c => c.College)
+                modelBuilder.Entity<Student>()
+                    .HasMany(s => s.Courses)
+                    .WithMany(c => c.Students)
+                    .UsingEntity(j => j.ToTable("StudentCourses")); 
+
+                
+                modelBuilder.Entity<Course>()
+                    .HasOne(c => c.College)
+                    .WithMany(co => co.Courses)
                     .HasForeignKey(c => c.collegeUniqueId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 modelBuilder.Entity<StudentReport>()
-                    .HasOne(s => s.Student)
-                    .WithMany()
-                    .HasForeignKey(a => a.AdmissionId);
-            
+                .HasOne(sr => sr.Student)
+                .WithMany(s => s.StudentReports)
+                .HasForeignKey(sr => sr.AdmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             }
             catch (Exception ex)
             {

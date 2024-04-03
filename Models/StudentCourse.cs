@@ -1,4 +1,4 @@
-﻿namespace Backend.Models
+﻿/*namespace Backend.Models
 {
     public class StudentCourse
     {
@@ -8,4 +8,4 @@
         public Course? Course { get; set; }
     }
 }
-    
+*//**/

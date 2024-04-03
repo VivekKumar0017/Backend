@@ -1,112 +1,153 @@
-﻿
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Logic
 {
     public class CourseRepository : ICourseRepository<Course, int>
     {
-        AdmissionDbContext ctx;
+        private readonly AdmissionDbContext ctx;
 
-        CollectionRespons<Course> collection = new CollectionRespons<Course>();
-        SingleObjectRespons<Course> single = new SingleObjectRespons<Course>();
+        private SingleObjectRespons<Course> single = new SingleObjectRespons<Course>();
+        private CollectionRespons<Course> collection = new CollectionRespons<Course>();
 
         public CourseRepository(AdmissionDbContext ctx)
         {
             this.ctx = ctx;
         }
-        public async Task<SingleObjectRespons<Course>> CreatecourseAsync(Course entity)
+
+        async Task<SingleObjectRespons<Course>> ICourseRepository<Course, int>. CreatecourseAsync(Course entity)
         {
             try
             {
                 ctx.Courses.Add(entity);
                 await ctx.SaveChangesAsync();
-                return new SingleObjectRespons<Course> { Record = entity, StatusCode = 200, Message = "Course created successfully" };
+                single.Record = entity;
+                single.StatusCode = 200;
+                single.Message = "Course created successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Course> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> DeletecourseAsync(int id)
+        async Task<SingleObjectRespons<Course>> ICourseRepository<Course, int>.DeletecourseAsync(int id)
         {
             try
             {
                 var course = await ctx.Courses.FindAsync(id);
                 if (course == null)
                 {
-                    return new SingleObjectRespons<Course> { Record = null, StatusCode = 404, Message = "Course not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Course not found";
+                    return single;
                 }
 
                 ctx.Courses.Remove(course);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<Course> { Record = course, StatusCode = 200, Message = "Course deleted successfully" };
+                single.Record = course;
+                single.StatusCode = 200;
+                single.Message = "Course deleted successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Course> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> GetcourseAsync(string name)
+         async Task<SingleObjectRespons<Course>> ICourseRepository<Course, int>.GetcourseAsync(string name)
         {
             try
             {
                 var course = await ctx.Courses.FirstOrDefaultAsync(c => c.CourseName == name);
                 if (course == null)
                 {
-                    return new SingleObjectRespons<Course> { Record = null, StatusCode = 404, Message = "Course not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Course not found";
+                    return single;
                 }
 
-                return new SingleObjectRespons<Course> { Record = course, StatusCode = 200, Message = "Course found" };
+                single.Record = course;
+                single.StatusCode = 200;
+                single.Message = "Course found";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Course> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
-        public async Task<CollectionRespons<Course>> GetcourseAsync()
+        async Task<CollectionRespons<Course>> ICourseRepository<Course, int>.GetcourseAsync()
         {
             try
             {
                 var courses = await ctx.Courses.ToListAsync();
-                return new CollectionRespons<Course> { Records = courses, StatusCode = 200, Message = "Courses retrieved successfully" };
+                collection.Records = courses;
+                collection.StatusCode = 200;
+                collection.Message = "Courses retrieved successfully";
+                return collection;
             }
             catch (Exception ex)
             {
-                return new CollectionRespons<Course> { Records = null, StatusCode = 500, Message = ex.Message };
+                collection.Records = null;
+                collection.StatusCode = 500;
+                collection.Message = ex.Message;
+                return collection;
             }
         }
 
-        public async Task<SingleObjectRespons<Course>> UpdatecourseAsync(int id, Course entity)
+         async Task<SingleObjectRespons<Course>> ICourseRepository<Course, int>.UpdatecourseAsync(int id, Course entity)
         {
             try
             {
                 var existingCourse = await ctx.Courses.FindAsync(id);
                 if (existingCourse == null)
                 {
-                    return new SingleObjectRespons<Course> { Record = null, StatusCode = 404, Message = "Course not found" };
+                    single.Record = null;
+                    single.StatusCode = 404;
+                    single.Message = "Course not found";
+                    return single;
                 }
 
                 existingCourse.CourseName = entity.CourseName;
-               
 
                 ctx.Courses.Update(existingCourse);
                 await ctx.SaveChangesAsync();
 
-                return new SingleObjectRespons<Course> { Record = existingCourse, StatusCode = 200, Message = "Course updated successfully" };
+                single.Record = existingCourse;
+                single.StatusCode = 200;
+                single.Message = "Course updated successfully";
+                return single;
             }
             catch (Exception ex)
             {
-                return new SingleObjectRespons<Course> { Record = null, StatusCode = 500, Message = ex.Message };
+                single.Record = null;
+                single.StatusCode = 500;
+                single.Message = ex.Message;
+                return single;
             }
         }
 
-        public async Task<CollectionRespons<Course>> GetcourseByCollegeIdAsync(int CollegeId)
+         async Task<CollectionRespons<Course>> ICourseRepository<Course, int>.GetcourseByCollegeIdAsync(int CollegeId)
         {
             try
             {
@@ -116,14 +157,23 @@ namespace Backend.Logic
 
                 if (courses == null || courses.Count == 0)
                 {
-                    return new CollectionRespons<Course> { Records = null, StatusCode = 404, Message = "No courses found for the specified college" };
+                    collection.Records = null;
+                    collection.StatusCode = 404;
+                    collection.Message = "No courses found for the specified college";
+                    return collection;
                 }
 
-                return new CollectionRespons<Course> { Records = courses, StatusCode = 200, Message = "Courses retrieved successfully" };
+                collection.Records = courses;
+                collection.StatusCode = 200;
+                collection.Message = "Courses retrieved successfully";
+                return collection;
             }
             catch (Exception ex)
             {
-                return new CollectionRespons<Course> { Records = null, StatusCode = 500, Message = ex.Message };
+                collection.Records = null;
+                collection.StatusCode = 500;
+                collection.Message = ex.Message;
+                return collection;
             }
         }
     }

@@ -13,5 +13,7 @@ namespace Backend.Models
         public string Grade { get; set; }
 
        public Student? Student { get; set; }
+
+        public Course Course { get; set; }
     }
 }
