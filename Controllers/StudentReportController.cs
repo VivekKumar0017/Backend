@@ -21,7 +21,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CollegePolicy")]
+      //  [Authorize(Policy = "CollegePolicy")]
         public async Task<IActionResult> CreateReport(StudentReport entity)
         {
             var result = await _studentReportRepository.CreateReportAsync(entity);
@@ -29,8 +29,8 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "StudentPolicy")]
-        [Authorize(Policy = "CollegePolicy")]
+        //[//Authorize(Policy = "StudentPolicy")]
+       // [Authorize(Policy = "CollegePolicy")]
         public async Task<IActionResult> GetReportById(int id)
         {
             var result = await _studentReportRepository.GetReportByIdAsync(id);
@@ -38,7 +38,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+       // [Authorize(Policy = "CollegePolicy")]
         public async Task<IActionResult> UpdateReport(int id, StudentReport entity)
         {
             var result = await _studentReportRepository.UpdateReportAsync(id, entity);
@@ -46,11 +46,21 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+       // [Authorize(Policy = "CollegePolicy")]
         public async Task<IActionResult> DeleteReport(int id)
         {
             var result = await _studentReportRepository.DeleteAsync(id);
             return StatusCode(result.StatusCode, result);
         }
+
+        [HttpGet("getFirstLastNameById/{id}")]
+        public async Task<IActionResult> GetFirstLastName(int id)
+        {
+            var result = await _studentReportRepository.getFirstLastNameById(id);
+            return StatusCode(result.StatusCode, result);
+
+
+        }
+
     }
 }

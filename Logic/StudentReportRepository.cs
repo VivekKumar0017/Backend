@@ -1,5 +1,6 @@
 ﻿using Backend.Models;
 using Backend.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace Backend.Logic
         {
             try
             {
-                var report = await ctx.StudentReports.FindAsync(id);
+                var report = await ctx.StudentReports.FirstOrDefaultAsync(r => r.AdmissionId == id);
                 if (report != null)
                 {
                     single.Record = report;
@@ -123,6 +124,61 @@ namespace Backend.Logic
                 single.StatusCode = 500;
                 single.Message = "An error occurred: " + ex.Message;
                 return single;
+            }
+        }
+
+        async Task<SingleObjectRespons<StudentReport>> IStudentReportRepository<StudentReport, int>.getFirstLastNameById(int id)
+        {
+
+            try
+            {
+                var report = await ctx.StudentReports.FirstOrDefaultAsync(r => r.AdmissionId == id);
+                if (report != null)
+                {
+                    var student = await ctx.Students.FirstOrDefaultAsync(s => s.AdmissionId == id);
+                    if (student != null)
+                    {
+                        // Combine first name and last name into one string
+                        string fullName = $"{student.FirstName} {student.LastName}";
+
+                        // Assign the combined name to a property in the StudentReport object
+                        report.FullName = fullName;
+
+                        return new SingleObjectRespons<StudentReport>
+                        {
+                            Record = report,
+                            StatusCode = 200,
+                            Message = "Student report retrieved successfully."
+                        };
+                    }
+                    else
+                    {
+                        return new SingleObjectRespons<StudentReport>
+                        {
+                            Record = null,
+                            StatusCode = 404,
+                            Message = "Student not found."
+                        };
+                    }
+                }
+                else
+                {
+                    return new SingleObjectRespons<StudentReport>
+                    {
+                        Record = null,
+                        StatusCode = 404,
+                        Message = "Student report not found."
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new SingleObjectRespons<StudentReport>
+                {
+                    Record = null,
+                    StatusCode = 500,
+                    Message = "An error occurred: " + ex.Message
+                };
             }
         }
     }

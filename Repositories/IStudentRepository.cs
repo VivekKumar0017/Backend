@@ -10,5 +10,10 @@ namespace Backend.Repositories
         Task<SingleObjectRespons<TEntity>> UpdateAsync(TPk id, TEntity entity);
         Task<SingleObjectRespons<TEntity>> DeleteAsync(TPk id);
         Task<CollectionRespons<TEntity>> GetPendingStudentsAsync(TPk collegeId);
+
+        Task<SingleObjectRespons<TEntity>> AssignCoursesToStudentAsync(TPk studentId, List<int> courseUniqueIds);
+        Task<CollectionRespons<string>> GetCoursesByAdmissionIdAsync(TPk id);
+
+
     }
 }

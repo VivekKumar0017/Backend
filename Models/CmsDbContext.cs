@@ -50,7 +50,7 @@ namespace Backend.Models
 
                 modelBuilder.Entity<StudentReport>()
                 .HasOne(sr => sr.Student)
-                .WithMany(s => s.StudentReports)
+                .WithMany()
                 .HasForeignKey(sr => sr.AdmissionId)
                 .OnDelete(DeleteBehavior.Cascade);
 

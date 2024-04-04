@@ -18,6 +18,55 @@ namespace Backend.Logic
             this.ctx = ctx;
         }
 
+        async Task<CollectionRespons<string>> IStudentRepository<Student, int>.GetCoursesByAdmissionIdAsync(int id)
+        {
+            try
+            {
+                var student = await ctx.Students
+                    .Include(s => s.Courses)
+                    .FirstOrDefaultAsync(s => s.AdmissionId == id);
+
+                if (student == null)
+                {
+                    return new CollectionRespons<string>
+                    {
+                        StatusCode = 404,
+                        Message = "No data found.",
+                        Records = null
+                    };
+                }
+
+                var courses = student.Courses.Select(c => c.CourseName).ToList();
+
+                if (courses == null || courses.Count == 0)
+                {
+                    return new CollectionRespons<string>
+                    {
+                        StatusCode = 404,
+                        Message = "No courses found for the student.",
+                        Records = null
+                    };
+                }
+
+                return new CollectionRespons<string>
+                {
+                    StatusCode = 200,
+                    Message = "Courses retrieved successfully.",
+                    Records = courses
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new CollectionRespons<string>
+                {
+                    StatusCode = 500,
+                    Message = $"An error occurred: {ex.Message}",
+                    Records = null
+                };
+            }
+        }
+
         public async Task<CollectionRespons<Student>> GetAllAsync()
         {
             try
@@ -99,6 +148,11 @@ namespace Backend.Logic
 
                 existingStudent.FirstName = entity.FirstName;
                 existingStudent.LastName = entity.LastName;
+                existingStudent.Email = entity.Email;
+                existingStudent.PhoneNumber = entity.PhoneNumber;
+                existingStudent.Gender = entity.Gender;
+                existingStudent.collegeUniqueId = entity.collegeUniqueId;
+                existingStudent.Address = entity.Address;
 
                 ctx.Students.Update(existingStudent);
                 await ctx.SaveChangesAsync();
@@ -190,5 +244,64 @@ namespace Backend.Logic
                 return collection;
             }
         }
+
+        async Task<SingleObjectRespons<Student>> IStudentRepository<Student, int>.AssignCoursesToStudentAsync(int studentId, List<int> courseUniqueIds)
+        {
+            try
+            {
+                var student = await ctx.Students.Include(s => s.Courses).FirstOrDefaultAsync(s => s.AdmissionId == studentId);
+
+                if (student == null)
+                {
+                    return new SingleObjectRespons<Student>
+                    {
+                        StatusCode = 404,
+                        Message = "Student not found.",
+                        Record = null
+                    };
+                }
+
+                var courses = await ctx.Courses.Where(c => courseUniqueIds.Contains(c.courseUniqueId)).ToListAsync();
+
+                if (courses.Count != courseUniqueIds.Count)
+                {
+                    return new SingleObjectRespons<Student>
+                    {
+                        StatusCode = 404,
+                        Message = "One or more courses not found.",
+                        Record = null
+                    };
+                }
+
+                // Assign courses to the student
+                student.Courses ??= new List<Course>();
+                foreach (var course in courses)
+                {
+                    if (!student.Courses.Any(c => c.courseUniqueId == course.courseUniqueId))
+                    {
+                        student.Courses.Add(course);
+                    }
+                }
+
+                await ctx.SaveChangesAsync();
+
+                return new SingleObjectRespons<Student>
+                {
+                    StatusCode = 200,
+                    Message = "Courses assigned successfully.",
+                    Record = student
+                };
+            }
+            catch (Exception ex)
+            {
+                return new SingleObjectRespons<Student>
+                {
+                    StatusCode = 500,
+                    Message = $"An error occurred: {ex.Message}",
+                    Record = null
+                };
+            }
+        }
+       
     }
 }

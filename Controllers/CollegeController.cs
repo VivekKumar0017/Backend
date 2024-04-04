@@ -43,20 +43,20 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+        //[Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> UpdateCollege(int id, College college)
         {
             return await _collegeRepository.UpdateAsync(id, college);
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+        //[Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> DeleteCollege(int id)
         {
             return await _collegeRepository.DeleteAsync(id);
         }
         [HttpPost("{collegeId}/ReviewStudentApplication/{admissionId}")]
-        [Authorize(Policy = "CollegePolicy")]
+        //[Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<College>>> ReviewStudentApplication(int collegeId, int admissionId, ApprovalStatus status)
         {
             return await _collegeRepository.ReviewStudentApplicationAsync(collegeId, admissionId, status);

@@ -6,9 +6,11 @@ namespace Backend.Repositories
     {
         
         Task<SingleObjectRespons<TEntity>> GetReportByIdAsync(TPk id);
+        Task<SingleObjectRespons<TEntity>> getFirstLastNameById(TPk id);
         Task<SingleObjectRespons<TEntity>> CreateReportAsync(TEntity entity);
         Task<SingleObjectRespons<TEntity>> UpdateReportAsync(TPk id, TEntity entity);
         Task<SingleObjectRespons<TEntity>> DeleteAsync(TPk id);
+
 
 
     }

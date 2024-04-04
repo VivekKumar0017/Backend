@@ -5,7 +5,7 @@
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class tenthmigration : Migration
+    public partial class krenilmig7 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -109,23 +109,23 @@ namespace Backend.Migrations
                     AdmissionId = table.Column<int>(type: "int", nullable: false),
                     Attendance = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Grade = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    courseUniqueId = table.Column<int>(type: "int", nullable: false)
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StudentAdmissionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StudentReports", x => x.studentReportId);
-                    table.ForeignKey(
-                        name: "FK_StudentReports_Courses_courseUniqueId",
-                        column: x => x.courseUniqueId,
-                        principalTable: "Courses",
-                        principalColumn: "courseUniqueId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_StudentReports_Students_AdmissionId",
                         column: x => x.AdmissionId,
                         principalTable: "Students",
                         principalColumn: "AdmissionId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentReports_Students_StudentAdmissionId",
+                        column: x => x.StudentAdmissionId,
+                        principalTable: "Students",
+                        principalColumn: "AdmissionId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -144,9 +144,9 @@ namespace Backend.Migrations
                 column: "AdmissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentReports_courseUniqueId",
+                name: "IX_StudentReports_StudentAdmissionId",
                 table: "StudentReports",
-                column: "courseUniqueId");
+                column: "StudentAdmissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_collegeUniqueId",

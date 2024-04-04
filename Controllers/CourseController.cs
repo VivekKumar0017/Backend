@@ -20,42 +20,42 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "StudentPolicy")]
+        //[Authorize(Policy = "StudentPolicy")]
         public async Task<ActionResult<CollectionRespons<Course>>> GetCourses()
         {
             return await _courseRepository.GetcourseAsync();
         }
 
         [HttpGet("{name}")]
-        [Authorize(Policy = "StudentPolicy")]
+        //[Authorize(Policy = "StudentPolicy")]
         public async Task<ActionResult<SingleObjectRespons<Course>>> GetCourse(string name)
         {
             return await _courseRepository.GetcourseAsync(name);
         }
 
         [HttpPost]
-        [Authorize(Policy = "CollegePolicy")]
+        //[Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<Course>>> CreateCourse(Course course)
         {
             return await _courseRepository.CreatecourseAsync(course);
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+       // [Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<Course>>> UpdateCourse(int id, Course course)
         {
             return await _courseRepository.UpdatecourseAsync(id, course);
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "CollegePolicy")]
+        //[Authorize(Policy = "CollegePolicy")]
         public async Task<ActionResult<SingleObjectRespons<Course>>> DeleteCourse(int id)
         {
             return await _courseRepository.DeletecourseAsync(id);
         }
 
         [HttpGet("college/{collegeId}")]
-        [Authorize(Policy = "StudentPolicy")]
+       // [Authorize(Policy = "StudentPolicy")]
         public async Task<ActionResult<CollectionRespons<Course>>> GetCoursesByCollegeId(int collegeId)
         {
             return await _courseRepository.GetcourseByCollegeIdAsync(collegeId);
